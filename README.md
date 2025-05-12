@@ -392,12 +392,6 @@ Infrastructure as Code principles have been implemented using Terraform to provi
   - A private subnet with properly configured IP allocations for secure internal communication
   - A floating IP assigned to node1 to enable external access to ArgoCD and Kubernetes UI services
 
-To provision the infrastructure:
-
-```bash
-terraform init && terraform apply -auto-approve
-```
-
 This approach completely eliminates manual configuration or "ClickOps," satisfying a core requirement of the Continuous X system. Provisioning outputs such as floating IPs can be verified using `openstack server list`, with all infrastructure resources being managed through version control for auditability and reproducibility.
 
 ### Cluster Bootstrap & Configuration (Ansible + Kubespray)
@@ -445,44 +439,6 @@ Each namespace is configured with its own Helm chart and `values.yaml` file. The
 
 This implementation fully satisfies the staged deployment requirement by providing clear promotion paths from staging to canary to production, with automated testing guiding the promotion decisions.
 
-## Deployment Instructions
-
-To deploy the complete stack on Chameleon Cloud, follow these sequential steps:
-
-```bash
-# Step 1 – Provision infrastructure
-cd continuous_x/tf/kvm
-terraform apply -auto-approve
-
-# Step 2 – Set up the Kubernetes cluster
-cd ../..
-ansible-playbook -i ansible/inventory.yml ansible/full_cluster_bootstrap.yml
-
-# Step 3 – Deploy platform services and workflows
-ansible-playbook -i ansible/inventory.yml ansible/argocd/workflow_templates_apply.yml
-
-# Step 4 – Manually trigger initial workflow
-curl -X POST -H "Authorization: Bearer <ARGO_TOKEN>" https://<ARGO_SERVER>/api/v1/workflows/argo/build-initial
-
-# Step 5 – Monitor via Argo UI
-kubectl -n argo port-forward svc/argo-server 2746:2746 &
-open http://localhost:2746/
-```
-
-> **Note:** Replace `<ARGO_SERVER>` with the floating IP and retrieve the token from ArgoCD setup logs.
-
-The ArgoCD dashboard provides a visual interface for monitoring deployments and application health across all environments.
-
-## Architecture Overview
-
-The system architecture follows modern cloud-native principles:
-
-1. **Trigger Mechanism**: A Git push (or manual trigger) initiates Argo Workflows (Build → Train → Package)
-2. **Artifact Storage**: The resulting OCI image is published to the local registry for versioning and deployment
-3. **Progressive Deployment**: ArgoCD deploys to staging environment where automated smoke tests validate functionality
-4. **Controlled Promotion**: Successful tests advance the release to canary (10% traffic) and then to production (100% traffic)
-
-This architecture ensures that all components are containerized, deployed using Helm, and follow immutable infrastructure patterns for reproducibility and reliability.
 
 ## Requirement Compliance
 
@@ -505,6 +461,4 @@ While the current implementation satisfies all requirements, several areas for f
 - **Enhanced Testing**: More comprehensive unit and load testing could be integrated in the `promote-model.yaml` workflow to improve deployment confidence
 - **Production-Ready ML**: The current dummy trainer could be replaced with a final fine-tuning model from the training component
 - **Advanced Canary Analysis**: Metrics-driven Argo Rollouts analysis templates could be implemented for more sophisticated automated canary decisions
-
-The codebase already includes placeholders and initial implementations for these enhancements, making them straightforward to complete in future iterations.
 
