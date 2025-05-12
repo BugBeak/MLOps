@@ -369,25 +369,7 @@ To follow cloud-native principles of:
 - Automates **hyperparameter tuning and evaluation**.
 
 ---
-# Continuous X: Cloud-Native MLOps Platform
-
-## Table of Contents
-- [Overview](#overview)
-- [System Lifecycle](#system-lifecycle)
-- [Technical Components](#technical-components)
-  - [Infrastructure as Code (Terraform)](#infrastructure-as-code-terraform)
-  - [Cluster Bootstrap & Configuration (Ansible + Kubespray)](#cluster-bootstrap--configuration-ansible--kubespray)
-  - [Platform Layer Services](#platform-layer-services)
-  - [CI/CD and Continuous Training (Argo Workflows)](#cicd-and-continuous-training-argo-workflows)
-  - [Staged Deployment Strategy](#staged-deployment-strategy)
-- [Deployment Instructions](#deployment-instructions)
-- [Architecture Overview](#architecture-overview)
-- [Requirement Compliance](#requirement-compliance)
-- [Future Work](#future-work)
-
-## Overview
-
-Continuous X is a comprehensive MLOps platform designed to enable continuous training, deployment, and monitoring of machine learning models in a cloud-native environment. The platform is built on Kubernetes and leverages modern DevOps practices to provide a fully automated pipeline from model training to production deployment.
+# Continuous X
 
 ## System Lifecycle
 
